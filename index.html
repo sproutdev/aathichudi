@@ -4,28 +4,419 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aathichudi · Tamil Calendar</title>
+<meta name="description" content="Aathichudi is a daily Tamil calendar for Android: one page a day with panchangam, nalla neram, rahu kalam, viratham days, festivals and a kural a day, in Tamil and English.">
+<meta property="og:title" content="Aathichudi: Tamil Calendar">
+<meta property="og:description" content="The Tamil wall calendar, made modern. One page a day, in Tamil and English.">
+<meta property="og:image" content="https://sproutdev.github.io/aathichudi/assets/og-en.jpg">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#F4F2EE">
+<link rel="icon" href="assets/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Noto+Sans+Tamil:wght@400;600;700;800&family=Noto+Serif+Tamil:wght@600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  :root { --paper: #F4F2EE; --ink: #141414; --soft: #5B5853; --red: #F5302C; --line: #DDD9D2; }
+  :root {
+    --paper: #F4F2EE; --paper-deep: #ECE9E3; --chrome: #E6E4E0; --ink: #141414; --soft: #5B5853;
+    --red: #F5302C; --pink: #FCDCDA; --green: #1F7A4D; --mint: #DCE6DF; --orange: #F08A24;
+    --lavender: #ECEAFB; --indigo: #3B3497; --line: #DDD9D2;
+    --serif: "Fraunces", "Noto Serif Tamil", Georgia, serif;
+    --serif-ta: "Noto Serif Tamil", "Fraunces", serif;
+    --sans: "Space Grotesk", "Noto Sans Tamil", -apple-system, "Segoe UI", sans-serif;
+    --tamil: "Noto Sans Tamil", "Space Grotesk", sans-serif;
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 -apple-system, "Segoe UI", Roboto, "Noto Sans Tamil", sans-serif; }
-  main { max-width: 720px; margin: 0 auto; padding: 40px 20px 80px; }
-  .mark { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: var(--ink); color: var(--paper); font-weight: 800; font-size: 24px; vertical-align: middle; margin-right: 10px; }
-  h1 { font-size: 30px; margin: 16px 0 4px; }
-  .meta { color: var(--soft); margin: 0 0 28px; }
-  ul { padding-left: 20px; }
-  li { margin: 6px 0; }
-  a { color: var(--red); font-weight: 600; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; color: var(--ink); font: 17px/1.6 var(--sans);
+    background-color: var(--paper);
+    background-image: radial-gradient(rgba(20,20,20,.08) 1px, transparent 1.2px);
+    background-size: 22px 22px;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  img, video { display: block; max-width: 100%; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+  /* Language: every text comes in both; the page shows one. */
+  html[lang="en"] .ta, html[lang="ta"] .en { display: none !important; }
+  html[lang="ta"] h1, html[lang="ta"] h2 { font-family: var(--serif-ta); letter-spacing: 0; }
+
+  /* Header */
+  .top { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+         background: rgba(244,242,238,.82); border-bottom: 1px solid rgba(20,20,20,.06); }
+  .top .wrap { display: flex; align-items: center; gap: 16px; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; font-size: 19px; }
+  .ring { width: 38px; height: 38px; }
+  .ring circle { fill: none; stroke: var(--ink); stroke-width: 7; stroke-linecap: round;
+                 stroke-dasharray: 290; stroke-dashoffset: 290; animation: draw 1.4s .2s cubic-bezier(.65,0,.35,1) forwards; }
+  .ring text { font-family: var(--tamil); font-weight: 800; font-size: 50px; fill: var(--ink);
+               opacity: 0; animation: fadein .6s 1s forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes fadein { to { opacity: 1; } }
+  .nav { margin-left: auto; display: flex; gap: 22px; font-size: 15px; }
+  .nav a { text-decoration: none; color: var(--soft); }
+  .nav a:hover { color: var(--ink); }
+  .lang { display: flex; background: var(--chrome); border-radius: 999px; padding: 3px; }
+  .lang button { border: 0; background: none; font: 600 14px var(--sans); padding: 6px 12px; border-radius: 999px; cursor: pointer; color: var(--soft); }
+  .lang button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .lang button:last-child { font-family: var(--tamil); }
+
+  /* Hero */
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr .95fr; gap: 40px; align-items: center; padding-top: 56px; padding-bottom: 40px; }
+  .eyebrow { font: 700 12px var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--red); }
+  h1 { font: 700 clamp(42px, 6.4vw, 78px)/1.02 var(--serif); letter-spacing: -.02em; margin: 14px 0 18px; }
+  h1 em, h2 em { font-style: italic; color: var(--red); font-weight: 600; }
+  .lead { font-size: 19px; color: var(--soft); max-width: 34ch; margin: 0 0 28px; }
+  html[lang="ta"] .lead { font-family: var(--tamil); font-size: 18px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 20px; border-radius: 14px; font: 700 15px var(--sans);
+         text-decoration: none; border: 0; cursor: pointer; transition: transform .2s, box-shadow .2s; }
+  .btn.dark { background: var(--ink); color: var(--paper); box-shadow: 0 10px 24px -12px rgba(0,0,0,.6); }
+  .btn.dark small { display: block; font: 500 11px var(--sans); opacity: .7; letter-spacing: .06em; text-transform: uppercase; }
+  .btn.light { background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .btn:hover { transform: translateY(-2px); }
+  .play-icon { width: 22px; height: 22px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+  .chip { font-size: 13px; padding: 6px 12px; border-radius: 999px; background: var(--paper-deep); color: var(--soft); }
+
+  /* The tear-off pad */
+  .pad { position: relative; width: min(380px, 88vw); margin: 0 auto; perspective: 1400px; cursor: pointer; }
+  .pad-head { position: relative; z-index: 5; display: flex; align-items: center; gap: 10px; background: #1E1C1A; color: #F4F2EE;
+              border-radius: 12px 12px 4px 4px; padding: 13px 16px; font-weight: 700; box-shadow: 0 10px 18px -8px rgba(0,0,0,.5); }
+  .pad-head .yr { margin-left: auto; color: var(--red); letter-spacing: .25em; font-size: 14px; }
+  .pad-head .mini { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #F4F2EE; display: grid; place-items: center;
+                    font: 800 12px var(--tamil); }
+  .stack { position: relative; height: 430px; margin-top: -4px; }
+  .sheet { position: absolute; inset: 0; background: var(--paper); border-radius: 4px 4px 16px 16px; padding: 22px 22px 20px;
+           box-shadow: 0 1px 0 rgba(0,0,0,.05), 0 18px 34px -18px rgba(0,0,0,.35); transform-origin: 50% 0;
+           display: flex; flex-direction: column; border-top: 2px dashed rgba(20,20,20,.18); }
+  .sheet:nth-last-child(2) { transform: translateY(5px) scale(.985); }
+  .sheet:nth-last-child(3) { transform: translateY(10px) scale(.97); }
+  .sheet.tear { animation: tear 1.05s cubic-bezier(.55,.02,.3,1) forwards; z-index: 4; }
+  @keyframes tear {
+    0%   { transform: none; }
+    22%  { transform: rotateX(-14deg) rotateZ(-2deg) translateY(-6px); }
+    100% { transform: translate(55%, -70%) rotateZ(-28deg) rotateX(-55deg); opacity: 0; }
+  }
+  .s-row { display: flex; justify-content: space-between; align-items: center; font-size: 15px; color: var(--soft); }
+  .s-month { font: 700 14px var(--sans); letter-spacing: .26em; color: var(--ink); }
+  html[lang="ta"] .s-month { font-family: var(--tamil); letter-spacing: .02em; }
+  .sun { display: inline-flex; align-items: center; gap: 6px; }
+  .sun i { width: 16px; height: 16px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 3px rgba(240,138,36,.25); }
+  .moon { width: 22px; height: 11px; border-radius: 22px 22px 0 0; background: var(--orange); }
+  .s-day { font: 700 168px/1 var(--sans); color: var(--green); text-align: center; letter-spacing: -.04em; margin: 16px 0 4px; }
+  .s-week { text-align: center; font-weight: 700; font-size: 20px; }
+  .s-week span { font-family: var(--tamil); }
+  .s-line { margin-top: auto; text-align: center; padding-top: 14px; border-top: 1px solid var(--line); }
+  .s-line b { display: block; font: 700 21px/1.35 var(--tamil); }
+  .s-line i { color: var(--soft); font-size: 14px; }
+  .hint { text-align: center; color: var(--soft); font-size: 13px; margin-top: 14px; }
+
+  /* Ticker */
+  .ticker { margin: 30px 0 10px; background: var(--ink); color: var(--paper); transform: rotate(-1.4deg); overflow: hidden; padding: 13px 0; }
+  .ticker .run { display: flex; width: max-content; animation: run 70s linear infinite; }
+  .tk { white-space: nowrap; padding: 0 28px; font-size: 16px; }
+  .tk b { font-family: var(--tamil); font-weight: 700; }
+  .tk i { color: #BDB9B1; font-family: var(--serif); }
+  .tk::after { content: "✦"; color: var(--red); margin-left: 56px; }
+  @keyframes run { to { transform: translateX(-50%); } }
+
+  /* Sections */
+  section.block { padding: 84px 0 20px; }
+  h2 { font: 700 clamp(34px, 4.6vw, 54px)/1.06 var(--serif); letter-spacing: -.015em; margin: 8px 0 14px; }
+  .sub { color: var(--soft); max-width: 52ch; margin: 0 0 36px; }
+  html[lang="ta"] .sub { font-family: var(--tamil); }
+
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .card { background: var(--paper); border-radius: 20px; padding: 22px; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 14px 30px -22px rgba(0,0,0,.45);
+          transition: transform .25s, box-shadow .25s; }
+  .card:hover { transform: translateY(-4px) rotate(-.5deg); box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 22px 40px -22px rgba(0,0,0,.5); }
+  .card .ic { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; margin-bottom: 14px; }
+  .card h3 { margin: 0 0 6px; font: 700 18px/1.3 var(--sans); }
+  html[lang="ta"] .card h3 { font-family: var(--tamil); font-size: 17px; }
+  .card p { margin: 0; color: var(--soft); font-size: 15px; line-height: 1.5; }
+  html[lang="ta"] .card p { font-family: var(--tamil); font-size: 14px; }
+  .bg-mint { background: var(--mint); } .bg-pink { background: var(--pink); } .bg-lav { background: var(--lavender); }
+  .bg-sun { background: #FBE7D1; } .bg-chrome { background: var(--chrome); }
+
+  /* Reels */
+  .reels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; align-items: start; }
+  .phone { position: relative; border-radius: 34px; background: #111; padding: 10px; box-shadow: 0 30px 50px -28px rgba(0,0,0,.6);
+           transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+  .phone:nth-child(2) { margin-top: 44px; }
+  .phone:hover { transform: translateY(-6px) rotate(-1deg); }
+  .phone video { width: 100%; aspect-ratio: 9/16; border-radius: 26px; background: #222; object-fit: cover; }
+  .mute { position: absolute; right: 20px; bottom: 20px; width: 40px; height: 40px; border-radius: 50%; border: 0; cursor: pointer;
+          background: rgba(20,20,20,.72); color: #fff; font-size: 18px; display: grid; place-items: center; }
+  .reel-cap { text-align: center; margin-top: 14px; font-weight: 700; }
+  html[lang="ta"] .reel-cap { font-family: var(--tamil); }
+  .credit { color: var(--soft); font-size: 13px; text-align: center; margin-top: 26px; }
+
+  /* Screens */
+  .gallery { display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 6px 4px 22px; scrollbar-width: thin; }
+  .gallery img { flex: 0 0 auto; width: 250px; aspect-ratio: 9/16; object-fit: cover; border-radius: 22px; scroll-snap-align: start;
+                 box-shadow: 0 16px 30px -22px rgba(0,0,0,.55); background: var(--paper-deep); }
+
+  /* Closing */
+  .closing { text-align: center; padding: 100px 0 70px; }
+  .closing .ring { width: 92px; height: 92px; margin: 0 auto 10px; }
+  .closing .ring circle { stroke-width: 6; animation-play-state: paused; }
+  .closing .ring text { animation-play-state: paused; }
+  .closing.in .ring circle, .closing.in .ring text { animation-play-state: running; }
+  .closing h2 { margin-top: 18px; }
+  .closing .cta { justify-content: center; margin-top: 26px; }
+
+  footer { border-top: 1px solid var(--line); padding: 32px 0 46px; color: var(--soft); font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: baseline; }
+  footer nav { display: flex; gap: 18px; }
+  footer .fine { flex-basis: 100%; font-size: 12.5px; }
+
+  /* Scroll reveal */
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  .cards .reveal:nth-child(4n+2) { transition-delay: .08s; } .cards .reveal:nth-child(4n+3) { transition-delay: .16s; }
+  .cards .reveal:nth-child(4n+4) { transition-delay: .24s; }
+  .hero .copy > * { animation: rise .8s cubic-bezier(.2,.8,.2,1) both; }
+  .hero .copy > *:nth-child(2) { animation-delay: .08s; } .hero .copy > *:nth-child(3) { animation-delay: .16s; }
+  .hero .copy > *:nth-child(4) { animation-delay: .24s; } .hero .copy > *:nth-child(5) { animation-delay: .32s; }
+  .hero .pad { animation: drop 1s .25s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+  @keyframes drop { from { opacity: 0; transform: translateY(-30px) rotate(3deg); } }
+
+  @media (max-width: 900px) {
+    .hero .wrap { grid-template-columns: 1fr; padding-top: 34px; text-align: left; }
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .reels { grid-template-columns: 1fr; max-width: 340px; margin: 0 auto; }
+    .phone:nth-child(2) { margin-top: 0; }
+    .nav { display: none; }
+    .lang { margin-left: auto; }
+  }
+  @media (max-width: 520px) {
+    .cards { grid-template-columns: 1fr; }
+    .s-day { font-size: 136px; }
+    .stack { height: 390px; }
+    .gallery img { width: 210px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .ring circle { stroke-dashoffset: 0; } .ring text { opacity: 1; }
+    .reveal { opacity: 1; transform: none; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <div><span class="mark">ஆ</span><strong>Aathichudi</strong></div>
-  <h1>Aathichudi: Tamil Calendar</h1>
-  <p class="meta">ஆத்திசூடி: தமிழ் காலண்டர் · A daily Tamil calendar for Android</p>
-  <ul>
-    <li><a href="privacy.html">Privacy policy</a> · <a href="privacy.html#ta">தனியுரிமைக் கொள்கை</a></li>
-    <li><a href="support.html">Support</a> · <a href="support.html">உதவி</a></li>
-  </ul>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Aathichudi">
+      <svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44"/><text x="50" y="66" text-anchor="middle">ஆ</text></svg>
+      <span class="en">Aathichudi</span><span class="ta" style="font-family:var(--tamil)">ஆத்திசூடி</span>
+    </a>
+    <nav class="nav">
+      <a href="#features"><span class="en">Features</span><span class="ta">சிறப்புகள்</span></a>
+      <a href="#reels"><span class="en">Reels</span><span class="ta">காணொளிகள்</span></a>
+      <a href="#screens"><span class="en">Screens</span><span class="ta">திரைகள்</span></a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="ta" aria-pressed="false">தமிழ்</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div class="copy">
+      <div class="eyebrow"><span class="en">Like the one on every Tamil wall</span><span class="ta">ஒவ்வொரு தமிழ் வீட்டுச் சுவரிலும் இருப்பது போல</span></div>
+      <h1><span class="en">Every morning, <em>tear</em> a page.</span><span class="ta">தினம் ஒரு <em>பக்கம்</em>.</span></h1>
+      <p class="lead"><span class="en">Aathichudi is the daily Tamil calendar, rebuilt for your phone: panchangam, nalla neram, rahu kalam and a kural, all on one page.</span><span class="ta">ஆத்திசூடி — வீட்டுச் சுவரில் தொங்கும் தினசரி தமிழ் நாள்காட்டி, இப்போது உங்கள் கைப்பேசியில். பஞ்சாங்கம், நல்ல நேரம், ராகு காலம், தினம் ஒரு குறள் — எல்லாம் ஒரே பக்கத்தில்.</span></p>
+      <div class="cta">
+        <span class="btn dark" aria-disabled="true">
+          <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="#34A853" d="M3.6 2.3 13.4 12l-9.8 9.7c-.4-.2-.6-.6-.6-1.1V3.4c0-.5.2-.9.6-1.1z"/><path fill="#FBBC04" d="m16.7 15.3-3.3-3.3 3.3-3.3 3.8 2.2c1.1.6 1.1 1.6 0 2.2z"/><path fill="#EA4335" d="M16.7 15.3 13.4 12l-9.8 9.7c.4.2.9.2 1.4-.1z"/><path fill="#4285F4" d="M16.7 8.7 5 2.4c-.5-.3-1-.3-1.4-.1L13.4 12z"/></svg>
+          <span><small><span class="en">Coming soon on</span><span class="ta">விரைவில்</span></small>Google Play</span>
+        </span>
+        <a class="btn light" href="#reels"><span class="en">Watch it in action</span><span class="ta">காணொளியில் பாருங்கள்</span></a>
+      </div>
+      <div class="chips">
+        <span class="chip"><span class="en">Works offline</span><span class="ta">இணையம் இல்லாமலும்</span></span>
+        <span class="chip">தமிழ் &amp; English</span>
+        <span class="chip"><span class="en">Large, clear text</span><span class="ta">பெரிய, தெளிவான எழுத்து</span></span>
+      </div>
+    </div>
+
+    <div class="pad" id="pad" role="img" aria-label="An animated tear-off calendar showing today's date">
+      <div class="pad-head"><span class="mini">ஆ</span><span>Aathichudi</span><span class="yr" id="yr">2026</span></div>
+      <div class="stack" id="stack"></div>
+      <div class="hint"><span class="en">Tap the pad to tear a page</span><span class="ta">பக்கத்தைக் கிழிக்கத் தொடுங்கள்</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker" aria-hidden="true"><div class="run"><span class="tk"><b>அறம் செய விரும்பு.</b> <i>Desire to do good.</i></span><span class="tk"><b>ஆறுவது சினம்.</b> <i>Anger should be cooled.</i></span><span class="tk"><b>இயல்வது கரவேல்.</b> <i>Don't hold back what you are able to give.</i></span><span class="tk"><b>ஈவது விலக்கேல்.</b> <i>Don't stop others from giving.</i></span><span class="tk"><b>உடையது விளம்பேல்.</b> <i>Don't boast of what you own.</i></span><span class="tk"><b>ஊக்கமது கைவிடேல்.</b> <i>Never give up your zeal.</i></span><span class="tk"><b>எண் எழுத்து இகழேல்.</b> <i>Don't look down on numbers and letters.</i></span><span class="tk"><b>ஏற்பது இகழ்ச்சி.</b> <i>Begging is shameful.</i></span><span class="tk"><b>ஐயம் இட்டு உண்.</b> <i>Give to those in need, then eat.</i></span><span class="tk"><b>ஒப்புரவு ஒழுகு.</b> <i>Live helpfully with others.</i></span><span class="tk"><b>ஓதுவது ஒழியேல்.</b> <i>Never stop learning.</i></span><span class="tk"><b>ஔவியம் பேசேல்.</b> <i>Don't speak out of envy.</i></span><span class="tk"><b>அஃகம் சுருக்கேல்.</b> <i>Don't give short measure.</i></span><span class="tk"><b>கண்டொன்று சொல்லேல்.</b> <i>Don't say other than what you saw.</i></span><span class="tk"><b>ஙப் போல் வளை.</b> <i>Bend like the letter ங, carrying those who depend on you.</i></span><span class="tk"><b>சனி நீராடு.</b> <i>Take your oil bath on Saturdays.</i></span><span class="tk"><b>அறம் செய விரும்பு.</b> <i>Desire to do good.</i></span><span class="tk"><b>ஆறுவது சினம்.</b> <i>Anger should be cooled.</i></span><span class="tk"><b>இயல்வது கரவேல்.</b> <i>Don't hold back what you are able to give.</i></span><span class="tk"><b>ஈவது விலக்கேல்.</b> <i>Don't stop others from giving.</i></span><span class="tk"><b>உடையது விளம்பேல்.</b> <i>Don't boast of what you own.</i></span><span class="tk"><b>ஊக்கமது கைவிடேல்.</b> <i>Never give up your zeal.</i></span><span class="tk"><b>எண் எழுத்து இகழேல்.</b> <i>Don't look down on numbers and letters.</i></span><span class="tk"><b>ஏற்பது இகழ்ச்சி.</b> <i>Begging is shameful.</i></span><span class="tk"><b>ஐயம் இட்டு உண்.</b> <i>Give to those in need, then eat.</i></span><span class="tk"><b>ஒப்புரவு ஒழுகு.</b> <i>Live helpfully with others.</i></span><span class="tk"><b>ஓதுவது ஒழியேல்.</b> <i>Never stop learning.</i></span><span class="tk"><b>ஔவியம் பேசேல்.</b> <i>Don't speak out of envy.</i></span><span class="tk"><b>அஃகம் சுருக்கேல்.</b> <i>Don't give short measure.</i></span><span class="tk"><b>கண்டொன்று சொல்லேல்.</b> <i>Don't say other than what you saw.</i></span><span class="tk"><b>ஙப் போல் வளை.</b> <i>Bend like the letter ங, carrying those who depend on you.</i></span><span class="tk"><b>சனி நீராடு.</b> <i>Take your oil bath on Saturdays.</i></span></div></div>
+
+<section class="block" id="features">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="en">Panchangam at a glance</span><span class="ta">ஒரே பார்வையில் பஞ்சாங்கம்</span></div>
+    <h2 class="reveal"><span class="en">Your whole day on <em>one page.</em></span><span class="ta">உங்கள் நாள் முழுவதும் <em>ஒரே பக்கத்தில்.</em></span></h2>
+    <p class="sub reveal"><span class="en">Everything a Tamil sheet calendar tells you, worked out for your own city and time zone.</span><span class="ta">தினசரி நாள்காட்டி சொல்லும் அனைத்தும், உங்கள் ஊருக்கும் நேர மண்டலத்துக்கும் ஏற்பக் கணக்கிடப்பட்டு.</span></p>
+    <div class="cards">
+      <div class="card reveal"><div class="ic bg-sun">☀️</div><h3><span class="en">Sunrise &amp; sunset</span><span class="ta">சூரிய உதயம், அஸ்தமனம்</span></h3><p><span class="en">For wherever you are, from Chennai to Dallas.</span><span class="ta">சென்னை முதல் டல்லாஸ் வரை, நீங்கள் இருக்கும் இடத்துக்கு.</span></p></div>
+      <div class="card reveal"><div class="ic bg-lav">🌙</div><h3><span class="en">Thithi &amp; nakshatram</span><span class="ta">திதி, நட்சத்திரம்</span></h3><p><span class="en">With the times they end, by the Vakya method of printed calendars.</span><span class="ta">முடியும் நேரத்துடன், அச்சு நாள்காட்டிகளின் வாக்கிய முறைப்படி.</span></p></div>
+      <div class="card reveal"><div class="ic bg-mint">⏳</div><h3><span class="en">Nalla neram &amp; rahu kalam</span><span class="ta">நல்ல நேரம், ராகு காலம்</span></h3><p><span class="en">Good hours and times to avoid, plus emagandam, kuligai and gowri.</span><span class="ta">நல்ல நேரமும் தவிர்க்க வேண்டிய நேரமும், எமகண்டம், குளிகை, கௌரியுடன்.</span></p></div>
+      <div class="card reveal"><div class="ic bg-pink">📖</div><h3><span class="en">A kural a day</span><span class="ta">தினம் ஒரு குறள்</span></h3><p><span class="en">Thirukkural with its meaning, plus Aathichudi and Naladiyar to read.</span><span class="ta">பொருளுடன் திருக்குறள்; ஆத்திசூடி, நாலடியார் நூல்களும்.</span></p></div>
+      <div class="card reveal"><div class="ic bg-pink">🪔</div><h3><span class="en">Festivals &amp; holidays</span><span class="ta">பண்டிகைகள், விடுமுறைகள்</span></h3><p><span class="en">Tamil festivals and Tamil Nadu holidays, month by month.</span><span class="ta">தமிழ்ப் பண்டிகைகளும் தமிழ்நாடு விடுமுறைகளும், மாதவாரியாக.</span></p></div>
+      <div class="card reveal"><div class="ic bg-lav">🔔</div><h3><span class="en">Viratham days</span><span class="ta">விரத நாட்கள்</span></h3><p><span class="en">Amavasai, pournami, ekadasi, pradosham and more, with home-screen widgets.</span><span class="ta">அமாவாசை, பௌர்ணமி, ஏகாதசி, பிரதோஷம் — முகப்புத் திரை விட்ஜெட்டுகளுடன்.</span></p></div>
+      <div class="card reveal"><div class="ic bg-mint">✨</div><h3><span class="en">Rasi palan &amp; more</span><span class="ta">ராசி பலன் மற்றும் பல</span></h3><p><span class="en">Rasi chart, porutham, suba muhurtham days, horai and manaiadi.</span><span class="ta">ராசி கட்டம், பொருத்தம், சுப முகூர்த்த நாட்கள், ஓரை, மனையடி.</span></p></div>
+      <div class="card reveal"><div class="ic bg-chrome">🅰️</div><h3><span class="en">Easy to read</span><span class="ta">படிக்க எளிது</span></h3><p><span class="en">Tamil or English, with large and extra-large text sizes.</span><span class="ta">தமிழ் அல்லது ஆங்கிலம், பெரிய எழுத்து அளவுகளுடன்.</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="reels">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="en">In motion</span><span class="ta">காணொளியில்</span></div>
+    <h2 class="reveal"><span class="en">See it <em>in action.</em></span><span class="ta">செயலில் <em>பாருங்கள்.</em></span></h2>
+    <div class="reels">
+      <figure class="reveal" style="margin:0"><div class="phone"><video muted loop playsinline preload="none" data-base="assets/reels/reel1-tear"></video><button class="mute" type="button" aria-label="Turn sound on">🔇</button></div><figcaption class="reel-cap"><span class="en">One page a day</span><span class="ta">தினம் ஒரு பக்கம்</span></figcaption></figure>
+      <figure class="reveal" style="margin:0"><div class="phone"><video muted loop playsinline preload="none" data-base="assets/reels/reel2-hours"></video><button class="mute" type="button" aria-label="Turn sound on">🔇</button></div><figcaption class="reel-cap"><span class="en">Today's good hours</span><span class="ta">இன்றைய நல்ல நேரம்</span></figcaption></figure>
+      <figure class="reveal" style="margin:0"><div class="phone"><video muted loop playsinline preload="none" data-base="assets/reels/reel3-wisdom"></video><button class="mute" type="button" aria-label="Turn sound on">🔇</button></div><figcaption class="reel-cap"><span class="en">Avvaiyar's wisdom</span><span class="ta">ஔவையின் ஞானம்</span></figcaption></figure>
+    </div>
+    <p class="credit">Music: “Thakil &amp; Nadaswaram during temple Deeparadhana” by Vis M, <a href="https://commons.wikimedia.org/wiki/File:Thakil_%26_Nadaswaram_during_temple_Deeparadhana.ogg">Wikimedia Commons</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> (excerpt, faded and normalised).</p>
+  </div>
+</section>
+
+<section class="block" id="screens">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="en">A closer look</span><span class="ta">அருகில் ஒரு பார்வை</span></div>
+    <h2 class="reveal"><span class="en">Made for <em>every day.</em></span><span class="ta"><em>ஒவ்வொரு நாளுக்கும்</em> ஏற்றது.</span></h2>
+    <div class="gallery reveal" id="gallery" tabindex="0" aria-label="App screenshots"></div>
+  </div>
+</section>
+
+<section class="closing" id="closing">
+  <div class="wrap">
+    <svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44"/><text x="50" y="66" text-anchor="middle">ஆ</text></svg>
+    <h2><span class="en">The Tamil calendar, <em>made modern.</em></span><span class="ta">தமிழ் நாள்காட்டி, <em>புதிய வடிவில்.</em></span></h2>
+    <p class="sub" style="margin:0 auto"><span class="en">Free. No ads, no accounts, no tracking. Your information stays on your phone.</span><span class="ta">இலவசம். விளம்பரம், கணக்கு, கண்காணிப்பு எதுவும் இல்லை. உங்கள் தகவல்கள் உங்கள் கைப்பேசியிலேயே.</span></p>
+    <div class="cta">
+      <span class="btn dark" aria-disabled="true"><span><small><span class="en">Coming soon on</span><span class="ta">விரைவில்</span></small>Google Play</span></span>
+      <a class="btn light" href="privacy.html"><span class="en">Privacy policy</span><span class="ta">தனியுரிமைக் கொள்கை</span></a>
+    </div>
+  </div>
+</section>
 </main>
+
+<footer>
+  <div class="wrap">
+    <strong style="color:var(--ink)">Aathichudi</strong>
+    <nav><a href="privacy.html">Privacy</a><a href="support.html">Support</a></nav>
+    <span>© 2026 SujathaThoppe</span>
+    <span class="fine">Aathichudi verses by Avvaiyar. Reel music by Vis M (CC BY 4.0). Fonts: Fraunces, Noto Sans &amp; Serif Tamil, Space Grotesk (SIL Open Font License).</span>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const LINES = [["அறம் செய விரும்பு.", "Desire to do good."], ["ஆறுவது சினம்.", "Anger should be cooled."], ["இயல்வது கரவேல்.", "Don't hold back what you are able to give."], ["ஈவது விலக்கேல்.", "Don't stop others from giving."], ["உடையது விளம்பேல்.", "Don't boast of what you own."], ["ஊக்கமது கைவிடேல்.", "Never give up your zeal."], ["எண் எழுத்து இகழேல்.", "Don't look down on numbers and letters."], ["ஏற்பது இகழ்ச்சி.", "Begging is shameful."], ["ஐயம் இட்டு உண்.", "Give to those in need, then eat."], ["ஒப்புரவு ஒழுகு.", "Live helpfully with others."], ["ஓதுவது ஒழியேல்.", "Never stop learning."], ["ஔவியம் பேசேல்.", "Don't speak out of envy."], ["அஃகம் சுருக்கேல்.", "Don't give short measure."], ["கண்டொன்று சொல்லேல்.", "Don't say other than what you saw."], ["ஙப் போல் வளை.", "Bend like the letter ங, carrying those who depend on you."], ["சனி நீராடு.", "Take your oil bath on Saturdays."], ["ஞயம்பட உரை.", "Speak pleasantly."], ["இடம்பட வீடு எடேல்.", "Don't build a house bigger than you need."], ["இணக்கம் அறிந்து இணங்கு.", "Know people well before you befriend them."], ["தந்தை தாய்ப் பேண்.", "Look after your father and mother."], ["நன்றி மறவேல்.", "Never forget a kindness."], ["பருவத்தே பயிர் செய்.", "Sow in the right season."], ["மண் பறித்து உண்ணேல்.", "Don't live by taking others' land."], ["இயல்பு அலாதன செய்யேல்.", "Don't do what goes against good conduct."], ["அரவம் ஆட்டேல்.", "Don't play with snakes."], ["இலவம் பஞ்சில் துயில்.", "Sleep on a soft cotton bed."], ["வஞ்சகம் பேசேல்.", "Don't speak deceitfully."], ["அழகு அலாதன செய்யேல்.", "Don't do what is unbecoming."], ["இளமையில் கல்.", "Learn while you are young."], ["அரனை மறவேல்.", "Don't forget God."]];
+  const MONTHS = {
+    en: ["January","February","March","April","May","June","July","August","September","October","November","December"],
+    ta: ["ஜனவரி","பிப்ரவரி","மார்ச்","ஏப்ரல்","மே","ஜூன்","ஜூலை","ஆகஸ்ட்","செப்டம்பர்","அக்டோபர்","நவம்பர்","டிசம்பர்"]
+  };
+  const DAYS_EN = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const DAYS_TA = ["ஞாயிறு","திங்கள்","செவ்வாய்","புதன்","வியாழன்","வெள்ளி","சனி"];
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const root = document.documentElement;
+
+  // ---- Language
+  let lang = "en";
+  try { lang = localStorage.getItem("lang") || (navigator.language || "").startsWith("ta") && "ta" || "en"; } catch (e) {}
+  function setLang(l) {
+    lang = l; root.lang = l;
+    document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === l)));
+    try { localStorage.setItem("lang", l); } catch (e) {}
+    renderSheets(); setReels(); setGallery();
+  }
+  document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang)));
+
+  // ---- The tear-off pad: today, then the days after it
+  const stack = document.getElementById("stack");
+  let offset = 0;
+  function sheetHTML(n) {
+    const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + n);
+    const [ta, en] = LINES[(Math.floor(d.getTime() / 864e5)) % LINES.length];
+    return `<div class="s-row"><span class="sun"><i></i></span>` +
+      `<span class="s-month">${lang === "ta" ? MONTHS.ta[d.getMonth()] : MONTHS.en[d.getMonth()].toUpperCase()}</span>` +
+      `<span class="moon"></span></div>` +
+      `<div class="s-day">${d.getDate()}</div>` +
+      `<div class="s-week">${DAYS_EN[d.getDay()]} • <span>${DAYS_TA[d.getDay()]}</span></div>` +
+      `<div class="s-line"><b>${ta}</b><i>${en}</i></div>`;
+  }
+  function renderSheets() {
+    stack.innerHTML = "";
+    for (let i = 2; i >= 0; i--) {
+      const s = document.createElement("div");
+      s.className = "sheet"; s.innerHTML = sheetHTML(offset + i); stack.appendChild(s);
+    }
+  }
+  let tearing = false;
+  function tear() {
+    if (tearing || still) return;
+    tearing = true;
+    const top = stack.lastElementChild;
+    top.classList.add("tear");
+    top.addEventListener("animationend", () => {
+      top.remove(); offset++;
+      const s = document.createElement("div");
+      s.className = "sheet"; s.innerHTML = sheetHTML(offset + 2);
+      stack.insertBefore(s, stack.firstChild);
+      tearing = false;
+    }, { once: true });
+  }
+  document.getElementById("pad").addEventListener("click", tear);
+  let auto = still ? null : setInterval(() => { if (!document.hidden) tear(); }, 4200);
+  // Past a week, start again from today.
+  setInterval(() => { if (offset > 6 && !tearing) { offset = 0; renderSheets(); } }, 1000);
+
+  // ---- Reels: play only while on screen
+  const vids = [...document.querySelectorAll("video[data-base]")];
+  function setReels() {
+    vids.forEach(v => {
+      const src = `${v.dataset.base}-${lang}.mp4`;
+      if (v.dataset.cur === src) return;
+      v.dataset.cur = src; v.poster = `${v.dataset.base}-${lang}.jpg`; v.src = src;
+      if (still) v.controls = true;
+    });
+  }
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    const v = e.target;
+    if (still) return;
+    if (e.isIntersecting) { v.play().catch(() => {}); } else { v.pause(); }
+  }), { threshold: .35 });
+  vids.forEach(v => io.observe(v));
+  document.querySelectorAll(".mute").forEach(btn => btn.addEventListener("click", () => {
+    const v = btn.previousElementSibling;
+    const on = v.muted;
+    vids.forEach(o => { o.muted = true; o.nextElementSibling.textContent = "🔇"; o.nextElementSibling.setAttribute("aria-label", "Turn sound on"); });
+    if (on) { v.muted = false; v.play().catch(() => {}); btn.textContent = "🔊"; btn.setAttribute("aria-label", "Turn sound off"); }
+  }));
+
+  // ---- Screenshot gallery
+  const SHOTS = ["01-home","02-hours","03-rasi","04-month","05-festivals","06-kural","07-dark","08-more"];
+  function setGallery() {
+    document.getElementById("gallery").innerHTML = SHOTS.map(s =>
+      `<img loading="lazy" src="assets/shots/${lang}/${s}.jpg" alt="Aathichudi screenshot: ${s.slice(3)}">`).join("");
+  }
+
+  // ---- Scroll reveal
+  const rv = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("in"); rv.unobserve(e.target); }
+  }), { threshold: .15, rootMargin: "0px 0px -40px 0px" });
+  document.querySelectorAll(".reveal, .closing").forEach(el => rv.observe(el));
+
+  document.getElementById("yr").textContent = new Date().getFullYear();
+  setLang(lang === "ta" ? "ta" : "en");
+})();
+</script>
 </body>
 </html>
